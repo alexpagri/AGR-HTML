@@ -26,11 +26,10 @@
     <h3>Scanned codes</h3>
     <ul id="list"></ul>
 
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
     <script>
+        await import('https://unpkg.com/@zxing/library@latest');
         const codeReader = new ZXing.BrowserQRCodeReader();
         const scanned = new Set();
-        const list = document.getElementById("list");
         codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
             if (result) {
                 const text = result.text;
