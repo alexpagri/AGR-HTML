@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch QR Scanner</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        video {
+            width: 100%;
+            max-height: 60vh;
+        }
+
+        ul {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <video id="video"></video>
+    <h3>Scanned codes</h3>
+    <ul id="list"></ul>
+
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script>
+        const codeReader = new ZXing.BrowserQRCodeReader();
+        const scanned = new Set();
+        const list = document.getElementById("list");
+
+        codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
+            if (result) {
+                const text = result.text;
+                if (!scanned.has(text)) {
+                    scanned.add(text);
+
+                    const li = document.createElement("li");
+                    li.textContent = text;
+                    list.appendChild(li);
+
+                    navigator.vibrate?.(50);
+                    new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAA==").play();
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
