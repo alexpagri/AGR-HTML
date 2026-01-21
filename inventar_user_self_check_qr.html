@@ -27,24 +27,35 @@
     <ul id="list"></ul>
 
     <script>
-        await import('https://unpkg.com/@zxing/library@latest');
-        const codeReader = new ZXing.BrowserQRCodeReader();
-        const scanned = new Set();
-        codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
-            if (result) {
-                const text = result.text;
-                if (!scanned.has(text)) {
-                    scanned.add(text);
+        // Since we cannot use `import`, we will load the library using dynamic import.
+        // This is the standard way to use ES modules in a traditional script.
+        // The import statement returns a promise, so we use .then() to access the library.
+        // Library not available in module
+        import('https://unpkg.com/@zxing/library@latest')
+            .then(module => {
+                const codeReader = new ZXing.BrowserQRCodeReader();
+                const scanned = new Set();
+                const list = document.getElementById("list");
 
-                    const li = document.createElement("li");
-                    li.textContent = text;
-                    list.appendChild(li);
+                codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
+                    if (result) {
+                        const text = result.text;
+                        if (!scanned.has(text)) {
+                            scanned.add(text);
 
-                    navigator.vibrate?.(50);
-                    new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAA==").play();
-                }
-            }
-        });
+                            const li = document.createElement("li");
+                            li.textContent = text;
+                            list.appendChild(li);
+
+                            navigator.vibrate?.(50);
+                            new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAA==").play();
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Failed to load the scanning library:", error);
+            });
     </script>
 
 </body>
