@@ -67,6 +67,29 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
+                async function sleep(n) {
+                    return new Promise(resolve => setTimeout(resolve, n));
+                }
+
+                async function procVd(videoDevices) {
+                    for (const v of videoDevices) {
+                        const stream3 = await navigator.mediaDevices.getUserMedia({
+                            video: {
+                                deviceId: {
+                                    exact: v.deviceId
+                                }
+                            }
+                        });
+                        const track = stream3.getVideoTracks()[0];
+                        // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
+                        //     alert(JSON.stringify(capabilities));
+                        // });
+                        alert(JSON.stringify(track.getCapabilities()));
+                        track.stop();
+                        await sleep(5000);
+                    }
+                }
+
                 navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: 'environment'
@@ -77,22 +100,7 @@
 
                     navigator.mediaDevices.enumerateDevices().then(devices => {
                         const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                        videoDevices.forEach(v => {
-                            navigator.mediaDevices.getUserMedia({
-                                video: {
-                                    deviceId: {
-                                        exact: v.deviceId
-                                    }
-                                }
-                            }).then(stream2 => {
-                                const track = stream2.getVideoTracks()[0];
-                                // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
-                                //     alert(JSON.stringify(capabilities));
-                                // });
-                                alert(JSON.stringify(track.getCapabilities()));
-                                track.stop();
-                            });
-                        })
+                        procVd(videoDevices);
                         // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
                         const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
                         // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
