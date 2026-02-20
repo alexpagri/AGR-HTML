@@ -67,7 +67,7 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
-                const devices = navigator.mediaDevices.enumerateDevices().then(() => {
+                navigator.mediaDevices.enumerateDevices().then(devices => {
                     const videoDevices = devices.filter(d => d.kind === 'videoinput');
                     const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode === 'environment');
                     const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
