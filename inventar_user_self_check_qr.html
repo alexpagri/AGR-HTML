@@ -72,21 +72,25 @@
                 }
 
                 async function procVd(videoDevices) {
-                    for (const v of videoDevices) {
-                        const stream3 = await navigator.mediaDevices.getUserMedia({
-                            video: {
-                                deviceId: {
-                                    exact: v.deviceId
+                    try {
+                        for (const v of videoDevices) {
+                            const stream3 = await navigator.mediaDevices.getUserMedia({
+                                video: {
+                                    deviceId: {
+                                        exact: v.deviceId
+                                    }
                                 }
-                            }
-                        });
-                        const track = stream3.getVideoTracks()[0];
-                        // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
-                        //     alert(JSON.stringify(capabilities));
-                        // });
-                        alert(JSON.stringify(track.getCapabilities()));
-                        track.stop();
-                        await sleep(5000);
+                            });
+                            const track = stream3.getVideoTracks()[0];
+                            // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
+                            //     alert(JSON.stringify(capabilities));
+                            // });
+                            alert(JSON.stringify(track.getCapabilities()));
+                            track.stop();
+                            await sleep(5000);
+                        }
+                    } catch (e) {
+                        alert(e);
                     }
                 }
 
