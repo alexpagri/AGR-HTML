@@ -87,6 +87,7 @@
                             //     alert(JSON.stringify(capabilities));
                             // });
                             alert(JSON.stringify(track.getCapabilities()));
+                            stream3.oninactive = () => alert('inactive2');
                             track.stop();
                             await sleep(5000);
                         }
@@ -101,6 +102,7 @@
                     }
                 }).then(stream => {
                     // init and get permissions
+                    stream.oninactive = () => alert('inactive1');
                     stream.getVideoTracks()[0].stop();
 
                     navigator.mediaDevices.enumerateDevices().then(devices => {
