@@ -104,7 +104,7 @@
 
                     navigator.mediaDevices.enumerateDevices().then(devices => {
                         const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                        procVd(videoDevices);
+                        procVd(videoDevices.reverse());
                         // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
                         const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
                         // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
