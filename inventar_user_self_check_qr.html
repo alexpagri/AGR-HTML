@@ -78,16 +78,8 @@
                     navigator.mediaDevices.enumerateDevices().then(devices => {
                         const videoDevices = devices.filter(d => d.kind === 'videoinput');
                         videoDevices.forEach(v => {
-                            navigator.mediaDevices.getUserMedia({
-                                video: {
-                                    deviceId: {
-                                        exact: v.deviceId
-                                    }
-                                }
-                            }).then(stream => {
-                                const track = stream.getVideoTracks()[0];
-                                alert(JSON.stringify(track.getCapabilities()));
-                                track.stop();
+                            new ImageCapture(v).getPhotoCapabilities().then(capabilities => {
+                                alert(JSON.stringify(capabilities));
                             });
                         })
                         // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
