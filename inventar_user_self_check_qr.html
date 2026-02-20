@@ -70,7 +70,8 @@
                 async function checkTorchSupport(track) {
                     if (!track) return false;
                     const capabilities = track.getCapabilities?.();
-                    return capabilities && capabilities.torch === true;
+                    alert(capabilities);
+                    return capabilities && capabilities.torch != null;
                 }
 
                 async function getCamerasWithTorchSupport() {
