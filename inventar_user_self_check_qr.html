@@ -73,6 +73,7 @@
 
                 async function procVd(videoDevices) {
                     try {
+                        await sleep(5000);
                         for (const v of videoDevices) {
                             const stream3 = await navigator.mediaDevices.getUserMedia({
                                 video: {
