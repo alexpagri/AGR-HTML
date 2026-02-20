@@ -84,13 +84,13 @@
                                         exact: v.deviceId
                                     }
                                 }
-                            }).then(stream => {
-                                const track = stream.getVideoTracks()[0];
-                                new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
-                                    alert(JSON.stringify(capabilities));
-                                    track.stop();
-                                });
-                                // alert(JSON.stringify(track.getCapabilities()));
+                            }).then(stream2 => {
+                                const track = stream2.getVideoTracks()[0];
+                                // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
+                                //     alert(JSON.stringify(capabilities));
+                                // });
+                                alert(JSON.stringify(track.getCapabilities()));
+                                track.stop();
                             });
                         })
                         // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
@@ -104,24 +104,24 @@
                             )
                         );
 
-                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                            if (err && err.name !== 'N') {
-                                console.log(err);
-                            }
-                            if (result) {
-                                const text = result.text;
-                                if (!scanned.has(text)) {
-                                    scanned.add(text);
+                        // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                        //     if (err && err.name !== 'N') {
+                        //         console.log(err);
+                        //     }
+                        //     if (result) {
+                        //         const text = result.text;
+                        //         if (!scanned.has(text)) {
+                        //             scanned.add(text);
 
-                                    const li = document.createElement("li");
-                                    li.textContent = text;
-                                    list.appendChild(li);
+                        //             const li = document.createElement("li");
+                        //             li.textContent = text;
+                        //             list.appendChild(li);
 
-                                    navigator.vibrate?.(50);
-                                    // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                                }
-                            }
-                        });
+                        //             navigator.vibrate?.(50);
+                        //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                        //         }
+                        //     }
+                        // });
                     });
                 });
 
