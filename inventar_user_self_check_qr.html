@@ -78,7 +78,7 @@
 
                     navigator.mediaDevices.enumerateDevices().then(devices => {
                         const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment') === 'environment');
+                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
                         const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
                         const selectedDeviceId = (
                             withFlash.length > 0 ? withFlash[0].deviceId : (
