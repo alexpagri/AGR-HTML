@@ -67,29 +67,34 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
-                navigator.mediaDevices.enumerateDevices().then(devices => {
-                    const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                    const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode === 'environment');
-                    const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                    const selectedDeviceId = withFlash.length > 0 ? withFlash[0].deviceId : backFacing[0].deviceId;
+                navigator.mediaDevices.getUserMedia({ video }).then(stream => {
+                    // init and get permissions
+                    stream.getVideoTracks()[0].stop();
 
-                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        if (err && err.name !== 'N') {
-                            console.log(err);
-                        }
-                        if (result) {
-                            const text = result.text;
-                            if (!scanned.has(text)) {
-                                scanned.add(text);
+                    navigator.mediaDevices.enumerateDevices().then(devices => {
+                        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode === 'environment');
+                        const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
+                        const selectedDeviceId = withFlash.length > 0 ? withFlash[0].deviceId : backFacing[0].deviceId;
 
-                                const li = document.createElement("li");
-                                li.textContent = text;
-                                list.appendChild(li);
-
-                                navigator.vibrate?.(50);
-                                // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                            if (err && err.name !== 'N') {
+                                console.log(err);
                             }
-                        }
+                            if (result) {
+                                const text = result.text;
+                                if (!scanned.has(text)) {
+                                    scanned.add(text);
+
+                                    const li = document.createElement("li");
+                                    li.textContent = text;
+                                    list.appendChild(li);
+
+                                    navigator.vibrate?.(50);
+                                    // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                }
+                            }
+                        });
                     });
                 });
 
