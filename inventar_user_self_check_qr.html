@@ -67,7 +67,12 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
-                navigator.mediaDevices.getUserMedia({ video }).then(stream => {
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        torch: true,
+                        facingMode: 'environment'
+                    }
+                }).then(stream => {
                     // init and get permissions
                     stream.getVideoTracks()[0].stop();
 
