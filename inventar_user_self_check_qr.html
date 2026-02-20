@@ -67,76 +67,59 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
-                async function checkTorchSupport(track) {
-                    if (!track) return false;
-                    const capabilities = track.getCapabilities?.();
-                    alert(capabilities);
-                    return capabilities && capabilities.torch != null;
-                }
-
-                async function getCamerasWithTorchSupport() {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                    const cameras = [];
-
-                    for (const device of videoDevices) {
-                        let supportsTorch = false;
-                        try {
-                            const stream = await navigator.mediaDevices.getUserMedia({
-                                video: { deviceId: { exact: device.deviceId } }
-                            });
-                            const track = stream.getVideoTracks()[0];
-                            supportsTorch = await checkTorchSupport(track);
-                            track.stop();
-                        } catch (e) {
-                            console.log(`Could not access camera ${device.label}:`, e);
-                        }
-                        cameras.push({
-                            deviceId: device.deviceId,
-                            label: device.label || `Camera ${cameras.length + 1}`,
-                            supportsTorch: supportsTorch
-                        });
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment'
                     }
-                    return cameras;
-                }
-
-                getCamerasWithTorchSupport().then(cameras => {
+                }).then(stream => {
                     // init and get permissions
-                    // stream.getVideoTracks()[0].stop();
-                    alert(JSON.stringify(cameras));
+                    stream.getVideoTracks()[0].stop();
 
-                    // navigator.mediaDevices.enumerateDevices().then(devices => {
-                    //     const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                    //     alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
-                    //     const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
-                    //     alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
-                    //     const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                    //     alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
-                    //     const selectedDeviceId = (
-                    //         withFlash.length > 0 ? withFlash[0].deviceId : (
-                    //             backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
-                    //         )
-                    //     );
+                    navigator.mediaDevices.enumerateDevices().then(devices => {
+                        const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                        videoDevices.forEach(v => {
+                            navigator.mediaDevices.getUserMedia({
+                                video: {
+                                    deviceId: {
+                                        exact: v.deviceId
+                                    }
+                                }
+                            }).then(stream => {
+                                const track = stream.getVideoTracks()[0];
+                                alert(JSON.stringify(track.getCapabilities()));
+                                track.stop();
+                            });
+                        })
+                        // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
+                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
+                        // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
+                        const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
+                        // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
+                        const selectedDeviceId = (
+                            withFlash.length > 0 ? withFlash[0].deviceId : (
+                                backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
+                            )
+                        );
 
-                    //     codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                    //         if (err && err.name !== 'N') {
-                    //             console.log(err);
-                    //         }
-                    //         if (result) {
-                    //             const text = result.text;
-                    //             if (!scanned.has(text)) {
-                    //                 scanned.add(text);
+                        codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                            if (err && err.name !== 'N') {
+                                console.log(err);
+                            }
+                            if (result) {
+                                const text = result.text;
+                                if (!scanned.has(text)) {
+                                    scanned.add(text);
 
-                    //                 const li = document.createElement("li");
-                    //                 li.textContent = text;
-                    //                 list.appendChild(li);
+                                    const li = document.createElement("li");
+                                    li.textContent = text;
+                                    list.appendChild(li);
 
-                    //                 navigator.vibrate?.(50);
-                    //                 // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                    //             }
-                    //         }
-                    //     });
-                    // });
+                                    navigator.vibrate?.(50);
+                                    // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                }
+                            }
+                        });
+                    });
                 });
 
                 flashlightBtn.addEventListener('click', async () => {
