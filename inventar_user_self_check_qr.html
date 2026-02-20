@@ -68,7 +68,7 @@
                 let flashlightOn = false;
 
                 codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
-                    if (err) {
+                    if (err && err.name !== 'N') {
                         console.log(err);
                     }
                     if (result) {
