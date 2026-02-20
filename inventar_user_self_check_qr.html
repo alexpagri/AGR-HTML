@@ -101,7 +101,8 @@
                             flashlightBtn.style.background = flashlightOn ? '#ffc107' : '#333';
                             flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
                         } catch (e) {
-                            alert('Flashlight nu este disponibil pe acest dispozitiv.');
+                            // alert('Flashlight nu este disponibil pe acest dispozitiv.');
+                            alert(JSON.stringify(videoTrack.getCapabilities(), null));
                         }
                     }
                 });
