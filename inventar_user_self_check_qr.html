@@ -4,6 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Batch QR Scanner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             font-family: sans-serif;
@@ -17,11 +18,38 @@
         ul {
             font-size: 14px;
         }
+
+        #flashlightBtn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 16px auto;
+            font-size: 24px;
+            transition: 'background 0.2s';
+        }
+
+        #flashlightBtn:hover {
+            background: #555;
+        }
+
+        h3 {
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
 
+    <button id="flashlightBtn">
+        <i class="fa-solid fa-lightbulb"></i>
+    </button>
     <video id="video"></video>
     <h3>Scanned codes</h3>
     <ul id="list"></ul>
@@ -36,8 +64,13 @@
                 const codeReader = new ZXing.BrowserQRCodeReader();
                 const scanned = new Set();
                 const list = document.getElementById("list");
+                const flashlightBtn = document.getElementById("flashlightBtn");
+                let flashlightOn = false;
 
                 codeReader.decodeFromVideoDevice(null, 'video', (result, err) => {
+                    if (err) {
+                        console.log(err);
+                    }
                     if (result) {
                         const text = result.text;
                         if (!scanned.has(text)) {
@@ -48,10 +81,35 @@
                             list.appendChild(li);
 
                             navigator.vibrate?.(50);
-                            new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YRAAAA==").play();
+                            // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
                         }
                     }
                 });
+                flashlightBtn.addEventListener('click', async () => {
+                    const videoElement = document.getElementById('video');
+                    const videoTrack = videoElement?.captureStream()?.getTracks()?.[0];
+
+                    if (videoTrack) {
+                        try {
+                            flashlightOn = !flashlightOn;
+                            await videoTrack.applyConstraints({
+                                advanced: [{ torch: flashlightOn }]
+                            });
+                            flashlightBtn.innerHTML = flashlightOn
+                                ? '<i class="fa-solid fa-lightbulb"></i>'
+                                : '<i class="fa-regular fa-lightbulb"></i>';
+                            flashlightBtn.style.background = flashlightOn ? '#ffc107' : '#333';
+                            flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
+                        } catch (e) {
+                            alert('Flashlight nu este disponibil pe acest dispozitiv.');
+                        }
+                    }
+                });
+                // Console log all query parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                for (const [key, value] of urlParams.entries()) {
+                    console.log(key, value);
+                }
             })
             .catch(error => {
                 console.error("Failed to load the scanning library:", error);
