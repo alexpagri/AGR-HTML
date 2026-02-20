@@ -73,7 +73,6 @@
 
                 async function procVd(videoDevices) {
                     try {
-                        // await sleep(5000);
                         for (const v of videoDevices) {
                             const stream3 = await navigator.mediaDevices.getUserMedia({
                                 video: {
@@ -92,7 +91,7 @@
                             });
                             track.stop();
                             await pr;
-                            // await sleep(5000);
+                            await sleep(5000);
                         }
                     } catch (e) {
                         alert(e);
@@ -111,6 +110,7 @@
                     });
                     stream.getVideoTracks()[0].stop();
                     await pr;
+                    await sleep(5000);
 
                     const devices = await navigator.mediaDevices.enumerateDevices();
 
