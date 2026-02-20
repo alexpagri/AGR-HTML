@@ -78,9 +78,13 @@
 
                     navigator.mediaDevices.enumerateDevices().then(devices => {
                         const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode === 'environment');
+                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment') === 'environment');
                         const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                        const selectedDeviceId = withFlash.length > 0 ? withFlash[0].deviceId : backFacing[0].deviceId;
+                        const selectedDeviceId = (
+                            withFlash.length > 0 ? withFlash[0].deviceId : (
+                                backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
+                            )
+                        );
 
                         codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                             if (err && err.name !== 'N') {
