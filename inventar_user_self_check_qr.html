@@ -73,7 +73,7 @@
 
                 async function procVd(videoDevices) {
                     try {
-                        await sleep(5000);
+                        // await sleep(5000);
                         for (const v of videoDevices) {
                             const stream3 = await navigator.mediaDevices.getUserMedia({
                                 video: {
@@ -87,58 +87,67 @@
                             //     alert(JSON.stringify(capabilities));
                             // });
                             alert(JSON.stringify(track.getCapabilities()));
-                            stream3.oninactive = () => alert('inactive2');
+                            const pr = new Promise((resolve, reject) => {
+                                stream3.oninactive = () => resolve();
+                            });
                             track.stop();
-                            await sleep(5000);
+                            await pr;
+                            // await sleep(5000);
                         }
                     } catch (e) {
                         alert(e);
                     }
                 }
 
-                navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'environment'
-                    }
-                }).then(stream => {
+                async function init() {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'environment'
+                        }
+                    })
                     // init and get permissions
-                    stream.oninactive = () => alert('inactive1');
-                    stream.getVideoTracks()[0].stop();
-
-                    navigator.mediaDevices.enumerateDevices().then(devices => {
-                        const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                        procVd(videoDevices.reverse());
-                        // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
-                        const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
-                        // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
-                        const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                        // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
-                        const selectedDeviceId = (
-                            withFlash.length > 0 ? withFlash[0].deviceId : (
-                                backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
-                            )
-                        );
-
-                        // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        //     if (err && err.name !== 'N') {
-                        //         console.log(err);
-                        //     }
-                        //     if (result) {
-                        //         const text = result.text;
-                        //         if (!scanned.has(text)) {
-                        //             scanned.add(text);
-
-                        //             const li = document.createElement("li");
-                        //             li.textContent = text;
-                        //             list.appendChild(li);
-
-                        //             navigator.vibrate?.(50);
-                        //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                        //         }
-                        //     }
-                        // });
+                    const pr = new Promise((resolve, reject) => {
+                        stream.oninactive = () => resolve();
                     });
-                });
+                    stream.getVideoTracks()[0].stop();
+                    await pr;
+
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+
+                    const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                    await procVd(videoDevices.reverse());
+                    // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
+                    const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
+                    // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
+                    const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
+                    // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
+                    const selectedDeviceId = (
+                        withFlash.length > 0 ? withFlash[0].deviceId : (
+                            backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
+                        )
+                    );
+
+                    // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                    //     if (err && err.name !== 'N') {
+                    //         console.log(err);
+                    //     }
+                    //     if (result) {
+                    //         const text = result.text;
+                    //         if (!scanned.has(text)) {
+                    //             scanned.add(text);
+
+                    //             const li = document.createElement("li");
+                    //             li.textContent = text;
+                    //             list.appendChild(li);
+
+                    //             navigator.vibrate?.(50);
+                    //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                    //         }
+                    //     }
+                    // });
+                }
+
+                init();
 
                 flashlightBtn.addEventListener('click', async () => {
                     const videoElement = document.getElementById('video');
