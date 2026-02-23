@@ -81,7 +81,7 @@
                     track.stop();
                     videoElement.srcObject = null;
                     // ({} as HTMLVideoElement).addEventListener('ended', () => { });
-                    // await sleep(5000);
+                    await sleep(5000);
                     return capabilities;
                 }
 
@@ -121,7 +121,7 @@
                             capabilities
                         });
                     }
-                    await sleep(5000);
+                    // await sleep(5000);
                     return cameras;
                 }
 
