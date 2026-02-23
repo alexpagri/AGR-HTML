@@ -76,6 +76,7 @@
                     const track = stream.getVideoTracks()[0];
                     videoElement.srcObject = stream;
                     await videoElement.play();
+                    await sleep(5000);
                     capabilities = track.getCapabilities?.();
                     track.stop();
                     videoElement.srcObject = null;
