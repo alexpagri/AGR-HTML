@@ -185,10 +185,12 @@
                     //     )
                     // );
 
-                    
+
 
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: true
+                        video: {
+                            facingMode: 'environment'
+                        }
                     });
                     const track = stream.getVideoTracks()[0];
                     videoElement.srcObject = stream;
