@@ -193,6 +193,7 @@
                         }
                     });
                     const track = stream.getVideoTracks()[0];
+                    alert(track.id);
                     videoElement.srcObject = stream;
                     await videoElement.play();
 
