@@ -163,7 +163,7 @@
                     // await pr;
                     // await sleep(5000);
 
-                    alert(JSON.stringify(await getCameras()));
+                    alert(JSON.stringify((await getCameras()).map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
 
                     // const devices = await navigator.mediaDevices.enumerateDevices();
 
