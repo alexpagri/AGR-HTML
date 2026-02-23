@@ -172,9 +172,9 @@
                     // await procVd(videoDevices.reverse());
                     // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
                     const backFacing = cameras.filter(d => d.capabilities.facingMode.includes('environment'));
-                    // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
+                    alert(JSON.stringify(backFacing));
                     const withFlash = backFacing.filter(d => d.capabilities.torch != null);
-                    // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
+                    alert(JSON.stringify(withFlash));
                     const selectedDeviceId = (
                         withFlash.length > 0 ? withFlash[0].deviceId : (
                             backFacing.length > 0 ? backFacing[0].deviceId : cameras[0].deviceId
