@@ -80,8 +80,7 @@
                     capabilities = track.getCapabilities?.();
                     track.stop();
                     videoElement.srcObject = null;
-                    // ({} as HTMLVideoElement).addEventListener('ended', () => { });
-                    await sleep(5000);
+                    // await sleep(5000);
                     return capabilities;
                 }
 
@@ -125,117 +124,56 @@
                     return cameras;
                 }
 
-                // async function procVd(videoDevices) {
-                //     try {
-                //         for (const v of videoDevices) {
-                //             const stream3 = await navigator.mediaDevices.getUserMedia({
-                //                 video: {
-                //                     deviceId: {
-                //                         exact: v.deviceId
-                //                     }
-                //                 }
-                //             });
-                //             const track = stream3.getVideoTracks()[0];
-                //             // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
-                //             //     alert(JSON.stringify(capabilities));
-                //             // });
-                //             alert(JSON.stringify(track.getCapabilities()));
-                //             const pr = new Promise((resolve, reject) => {
-                //                 stream3.oninactive = () => resolve();
-                //             });
-                //             track.stop();
-                //             await pr;
-                //             await sleep(5000);
-                //         }
-                //     } catch (e) {
-                //         alert(e);
-                //     }
-                // }
-
                 async function init() {
-                    // const stream = await navigator.mediaDevices.getUserMedia({
-                    //     video: {
-                    //         facingMode: 'environment'
-                    //     }
-                    // })
-                    // alert(JSON.stringify(stream.getVideoTracks()[0].getCapabilities()));
-                    // // init and get permissions
-                    // const pr = new Promise((resolve, reject) => {
-                    //     stream.oninactive = () => resolve();
-                    // });
-                    // stream.getVideoTracks()[0].stop();
-                    // await pr;
-                    // await sleep(5000);
 
                     const cameras = await getCameras();
-                    alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
+                    // alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
 
-                    // const devices = await navigator.mediaDevices.enumerateDevices();
-
-                    // const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                    // await procVd(videoDevices.reverse());
-                    // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
                     const backFacing = cameras.filter(d => d.capabilities.facingMode.includes('environment'));
-                    alert(JSON.stringify(backFacing));
+                    // alert(JSON.stringify(backFacing));
                     const withFlash = backFacing.filter(d => d.capabilities.torch != null);
-                    alert(JSON.stringify(withFlash));
+                    // alert(JSON.stringify(withFlash));
                     const selectedDeviceId = (
                         withFlash.length > 0 ? withFlash[0].deviceId : (
                             backFacing.length > 0 ? backFacing[0].deviceId : cameras[0].deviceId
                         )
                     );
 
-
-
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: { deviceId: { exact: selectedDeviceId } }
                     });
                     const track = stream.getVideoTracks()[0];
-                    videoElement.srcObject = stream;
-                    await videoElement.play();
-                    alert(track.id);
-                    alert(JSON.stringify(track.getCapabilities()));
+                    // videoElement.srcObject = stream;
+                    // await videoElement.play();
+                    // alert(track.id);
+                    // alert(JSON.stringify(track.getCapabilities()));
 
-                    // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                    //     if (err && err.name !== 'N') {
-                    //         console.log(err);
-                    //     }
-                    //     if (result) {
-                    //         const text = result.text;
-                    //         if (!scanned.has(text)) {
-                    //             scanned.add(text);
+                    codeReader.decodeFromStream(stream, 'video', (result, err) => {
+                        if (err && err.name !== 'N') {
+                            console.log(err);
+                        }
+                        if (result) {
+                            const text = result.text;
+                            if (!scanned.has(text)) {
+                                scanned.add(text);
 
-                    //             const li = document.createElement("li");
-                    //             li.textContent = text;
-                    //             list.appendChild(li);
+                                const li = document.createElement("li");
+                                li.textContent = text;
+                                list.appendChild(li);
 
-                    //             navigator.vibrate?.(50);
-                    //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                    //         }
-                    //     }
-                    // });
+                                navigator.vibrate?.(50);
+                                // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                            }
+                        }
+                    });
 
                     flashlightBtn.addEventListener('click', async () => {
-                        const videoTrack = videoElement?.captureStream()?.getTracks()?.[0];
-                        alert(videoElement?.captureStream()?.getTracks()?.length);
-                        alert(videoElement?.srcObject?.getTracks()?.length);
-                        alert(videoElement?.srcObject?.getTracks()?.[0].id);
-                        alert(JSON.stringify(videoElement?.srcObject?.getTracks()?.[0].getCapabilities?.()));
-                        alert(JSON.stringify(videoElement?.srcObject?.getVideoTracks()?.[0].getCapabilities?.()));
-                        alert(JSON.stringify(track.getCapabilities?.()));
-                        if (videoTrack) {
+                        if (track) {
                             try {
                                 flashlightOn = !flashlightOn;
-                                alert(videoTrack.id);
-                                alert(videoElement?.captureStream()?.getVideoTracks()?.[0].id);
-                                alert(JSON.stringify({
-                                    advanced: [{ torch: flashlightOn }]
-                                }));
-                                alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
                                 await track.applyConstraints({
                                     advanced: [{ torch: flashlightOn }]
                                 });
-                                alert("ok");
                                 flashlightBtn.innerHTML = flashlightOn
                                     ? '<i class="fa-solid fa-lightbulb"></i>'
                                     : '<i class="fa-regular fa-lightbulb"></i>';
@@ -243,16 +181,13 @@
                                 flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
                             } catch (e) {
                                 // alert('Flashlight nu este disponibil pe acest dispozitiv.');
-                                alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
-                                alert(e.name);
-                                alert(e.message);
+                                alert(JSON.stringify(track.getCapabilities?.(), null));
                             }
                         }
                     });
                 }
 
                 init();
-
 
                 // Console log all query parameters
                 const urlParams = new URLSearchParams(window.location.search);
