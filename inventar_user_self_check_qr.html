@@ -193,9 +193,10 @@
                         }
                     });
                     const track = stream.getVideoTracks()[0];
-                    alert(track.id);
                     videoElement.srcObject = stream;
                     await videoElement.play();
+                    alert(track.id);
+                    alert(JSON.stringify(track.getCapabilities()));
 
                     // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     //     if (err && err.name !== 'N') {
