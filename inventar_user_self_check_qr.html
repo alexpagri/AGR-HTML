@@ -228,7 +228,8 @@
                         } catch (e) {
                             // alert('Flashlight nu este disponibil pe acest dispozitiv.');
                             // alert(JSON.stringify(videoTrack.getCapabilities(), null));
-                            alert(JSON.stringify(e));
+                            alert(e.name);
+                            alert(e.message);
                         }
                     }
                 });
