@@ -216,43 +216,45 @@
                     //         }
                     //     }
                     // });
+
+                    flashlightBtn.addEventListener('click', async () => {
+                        const videoTrack = videoElement?.captureStream()?.getTracks()?.[0];
+                        alert(videoElement?.captureStream()?.getTracks()?.length);
+                        alert(videoElement?.srcObject?.getTracks()?.length);
+                        alert(videoElement?.srcObject?.getTracks()?.[0].id);
+                        alert(JSON.stringify(videoElement?.srcObject?.getTracks()?.[0].getCapabilities?.()));
+                        alert(JSON.stringify(videoElement?.srcObject?.getVideoTracks()?.[0].getCapabilities?.()));
+                        if (videoTrack) {
+                            try {
+                                flashlightOn = !flashlightOn;
+                                alert(videoTrack.id);
+                                alert(videoElement?.captureStream()?.getVideoTracks()?.[0].id);
+                                alert(JSON.stringify({
+                                    advanced: [{ torch: flashlightOn }]
+                                }));
+                                alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
+                                await videoTrack.applyConstraints({
+                                    advanced: [{ torch: flashlightOn }]
+                                });
+                                alert("ok");
+                                flashlightBtn.innerHTML = flashlightOn
+                                    ? '<i class="fa-solid fa-lightbulb"></i>'
+                                    : '<i class="fa-regular fa-lightbulb"></i>';
+                                flashlightBtn.style.background = flashlightOn ? '#ffc107' : '#333';
+                                flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
+                            } catch (e) {
+                                // alert('Flashlight nu este disponibil pe acest dispozitiv.');
+                                alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
+                                alert(e.name);
+                                alert(e.message);
+                            }
+                        }
+                    });
                 }
 
                 init();
 
-                flashlightBtn.addEventListener('click', async () => {
-                    const videoTrack = videoElement?.captureStream()?.getTracks()?.[0];
-                    alert(videoElement?.captureStream()?.getTracks()?.length);
-                    alert(videoElement?.srcObject?.getTracks()?.length);
-                    alert(videoElement?.srcObject?.getTracks()?.[0].id);
-                    alert(JSON.stringify(videoElement?.srcObject?.getTracks()?.[0].getCapabilities?.()));
-                    alert(JSON.stringify(videoElement?.srcObject?.getVideoTracks()?.[0].getCapabilities?.()));
-                    if (videoTrack) {
-                        try {
-                            flashlightOn = !flashlightOn;
-                            alert(videoTrack.id);
-                            alert(videoElement?.captureStream()?.getVideoTracks()?.[0].id);
-                            alert(JSON.stringify({
-                                advanced: [{ torch: flashlightOn }]
-                            }));
-                            alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
-                            await videoTrack.applyConstraints({
-                                advanced: [{ torch: flashlightOn }]
-                            });
-                            alert("ok");
-                            flashlightBtn.innerHTML = flashlightOn
-                                ? '<i class="fa-solid fa-lightbulb"></i>'
-                                : '<i class="fa-regular fa-lightbulb"></i>';
-                            flashlightBtn.style.background = flashlightOn ? '#ffc107' : '#333';
-                            flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
-                        } catch (e) {
-                            // alert('Flashlight nu este disponibil pe acest dispozitiv.');
-                            alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
-                            alert(e.name);
-                            alert(e.message);
-                        }
-                    }
-                });
+
                 // Console log all query parameters
                 const urlParams = new URLSearchParams(window.location.search);
                 for (const [key, value] of urlParams.entries()) {
