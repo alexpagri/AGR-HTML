@@ -82,7 +82,9 @@
                     if (videoDevices[0].deviceId.trim() === '') {
                         // init first camera
                         const stream = await navigator.mediaDevices.getUserMedia({
-                            video: true
+                            video: {
+                                facingMode: 'environment'
+                            }
                         });
                         const track = stream.getVideoTracks()[0];
                         capabilities = track.getCapabilities?.();
