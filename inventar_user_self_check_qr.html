@@ -67,6 +67,37 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
+                async function checkTorchSupport(track) {
+                    if (!track) return false;
+                    const capabilities = track.getCapabilities?.();
+                    return capabilities && capabilities.torch === true;
+                }
+
+                async function getCamerasWithTorchSupport(videoDevices) {
+                    const cameras = [];
+
+                    for (const device of videoDevices) {
+                        let supportsTorch = false;
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({
+                                video: { deviceId: { exact: device.deviceId } }
+                            });
+                            const track = stream.getVideoTracks()[0];
+                            supportsTorch = await checkTorchSupport(track);
+                            track.stop();
+                            await sleep(150);
+                        } catch (e) {
+                            console.log(`Could not access camera ${device.label}:`, e);
+                        }
+                        cameras.push({
+                            deviceId: device.deviceId,
+                            label: device.label || `Camera ${cameras.length + 1}`,
+                            supportsTorch: supportsTorch
+                        });
+                    }
+                    return cameras;
+                }
+
                 async function sleep(n) {
                     return new Promise(resolve => setTimeout(resolve, n));
                 }
@@ -99,20 +130,22 @@
                 }
 
                 async function init() {
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            torch: true,
-                            facingMode: 'environment'
-                        }
-                    })
-                    alert(JSON.stringify(stream.getVideoTracks()[0].getCapabilities()));
-                    // init and get permissions
-                    const pr = new Promise((resolve, reject) => {
-                        stream.oninactive = () => resolve();
-                    });
-                    stream.getVideoTracks()[0].stop();
-                    await pr;
-                    await sleep(5000);
+                    // const stream = await navigator.mediaDevices.getUserMedia({
+                    //     video: {
+                    //         facingMode: 'environment'
+                    //     }
+                    // })
+                    // alert(JSON.stringify(stream.getVideoTracks()[0].getCapabilities()));
+                    // // init and get permissions
+                    // const pr = new Promise((resolve, reject) => {
+                    //     stream.oninactive = () => resolve();
+                    // });
+                    // stream.getVideoTracks()[0].stop();
+                    // await pr;
+                    // await sleep(5000);
+
+                    await navigator.permissions.query({ name: 'camera' });
+                    await navigator.permissions.query({ name: 'microphone' });
 
                     const devices = await navigator.mediaDevices.enumerateDevices();
 
