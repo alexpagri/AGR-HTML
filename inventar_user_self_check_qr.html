@@ -87,7 +87,7 @@
                         const track = stream.getVideoTracks()[0];
                         capabilities = track.getCapabilities?.();
                         track.stop();
-                        await sleep(150);
+                        await sleep(5000);
                     }
 
                     for (const device of videoDevices) {
@@ -99,7 +99,7 @@
                             const track = stream.getVideoTracks()[0];
                             capabilities = track.getCapabilities?.();
                             track.stop();
-                            await sleep(150);
+                            await sleep(5000);
                         } catch (e) {
                             console.log(`Could not access camera ${device.label}:`, e);
                         }
