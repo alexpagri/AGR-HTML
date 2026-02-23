@@ -208,6 +208,8 @@
                 flashlightBtn.addEventListener('click', async () => {
                     const videoTrack = videoElement?.captureStream()?.getTracks()?.[0];
                     alert(videoElement?.captureStream()?.getTracks()?.length);
+                    alert(videoElement?.srcObject?.getTracks()?.length);
+                    alert(videoElement?.srcObject?.getTracks()?.[0].id);
                     if (videoTrack) {
                         try {
                             flashlightOn = !flashlightOn;
