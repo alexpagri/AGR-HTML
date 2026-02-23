@@ -67,23 +67,37 @@
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
-                async function checkTorchSupport(track) {
-                    if (!track) return false;
-                    const capabilities = track.getCapabilities?.();
-                    return capabilities && capabilities.torch === true;
+                async function sleep(n) {
+                    return new Promise(resolve => setTimeout(resolve, n));
                 }
 
-                async function getCamerasWithTorchSupport(videoDevices) {
+                async function getCameras() {
                     const cameras = [];
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    let videoDevices = devices.filter(d => d.kind === 'videoinput');
+                    if (videoDevices.length === 0) {
+                        alert("No video input devices found.");
+                        return [];
+                    }
+                    if (videoDevices[0].deviceId.trim() === '') {
+                        // init first camera
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            video: true
+                        });
+                        const track = stream.getVideoTracks()[0];
+                        capabilities = track.getCapabilities?.();
+                        track.stop();
+                        await sleep(150);
+                    }
 
                     for (const device of videoDevices) {
-                        let supportsTorch = false;
+                        let capabilities;
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({
                                 video: { deviceId: { exact: device.deviceId } }
                             });
                             const track = stream.getVideoTracks()[0];
-                            supportsTorch = await checkTorchSupport(track);
+                            capabilities = track.getCapabilities?.();
                             track.stop();
                             await sleep(150);
                         } catch (e) {
@@ -92,42 +106,38 @@
                         cameras.push({
                             deviceId: device.deviceId,
                             label: device.label || `Camera ${cameras.length + 1}`,
-                            supportsTorch: supportsTorch
+                            capabilities
                         });
                     }
                     return cameras;
                 }
 
-                async function sleep(n) {
-                    return new Promise(resolve => setTimeout(resolve, n));
-                }
-
-                async function procVd(videoDevices) {
-                    try {
-                        for (const v of videoDevices) {
-                            const stream3 = await navigator.mediaDevices.getUserMedia({
-                                video: {
-                                    deviceId: {
-                                        exact: v.deviceId
-                                    }
-                                }
-                            });
-                            const track = stream3.getVideoTracks()[0];
-                            // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
-                            //     alert(JSON.stringify(capabilities));
-                            // });
-                            alert(JSON.stringify(track.getCapabilities()));
-                            const pr = new Promise((resolve, reject) => {
-                                stream3.oninactive = () => resolve();
-                            });
-                            track.stop();
-                            await pr;
-                            await sleep(5000);
-                        }
-                    } catch (e) {
-                        alert(e);
-                    }
-                }
+                // async function procVd(videoDevices) {
+                //     try {
+                //         for (const v of videoDevices) {
+                //             const stream3 = await navigator.mediaDevices.getUserMedia({
+                //                 video: {
+                //                     deviceId: {
+                //                         exact: v.deviceId
+                //                     }
+                //                 }
+                //             });
+                //             const track = stream3.getVideoTracks()[0];
+                //             // new ImageCapture(track).getPhotoCapabilities().then(capabilities => {
+                //             //     alert(JSON.stringify(capabilities));
+                //             // });
+                //             alert(JSON.stringify(track.getCapabilities()));
+                //             const pr = new Promise((resolve, reject) => {
+                //                 stream3.oninactive = () => resolve();
+                //             });
+                //             track.stop();
+                //             await pr;
+                //             await sleep(5000);
+                //         }
+                //     } catch (e) {
+                //         alert(e);
+                //     }
+                // }
 
                 async function init() {
                     // const stream = await navigator.mediaDevices.getUserMedia({
@@ -144,23 +154,22 @@
                     // await pr;
                     // await sleep(5000);
 
-                    await navigator.permissions.query({ name: 'camera' });
-                    await navigator.permissions.query({ name: 'microphone' });
+                    alert(JSON.stringify(await getCameras()));
 
-                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    // const devices = await navigator.mediaDevices.enumerateDevices();
 
-                    const videoDevices = devices.filter(d => d.kind === 'videoinput');
-                    await procVd(videoDevices.reverse());
-                    // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
-                    const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
-                    // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
-                    const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                    // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
-                    const selectedDeviceId = (
-                        withFlash.length > 0 ? withFlash[0].deviceId : (
-                            backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
-                        )
-                    );
+                    // const videoDevices = devices.filter(d => d.kind === 'videoinput');
+                    // await procVd(videoDevices.reverse());
+                    // // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
+                    // const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
+                    // // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
+                    // const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
+                    // // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
+                    // const selectedDeviceId = (
+                    //     withFlash.length > 0 ? withFlash[0].deviceId : (
+                    //         backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
+                    //     )
+                    // );
 
                     // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                     //     if (err && err.name !== 'N') {
