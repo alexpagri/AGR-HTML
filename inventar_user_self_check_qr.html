@@ -224,6 +224,7 @@
                         alert(videoElement?.srcObject?.getTracks()?.[0].id);
                         alert(JSON.stringify(videoElement?.srcObject?.getTracks()?.[0].getCapabilities?.()));
                         alert(JSON.stringify(videoElement?.srcObject?.getVideoTracks()?.[0].getCapabilities?.()));
+                        alert(JSON.stringify(track.getCapabilities?.()));
                         if (videoTrack) {
                             try {
                                 flashlightOn = !flashlightOn;
