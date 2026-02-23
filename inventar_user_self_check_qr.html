@@ -50,7 +50,7 @@
     <button id="flashlightBtn">
         <i class="fa-solid fa-lightbulb"></i>
     </button>
-    <video id="video"></video>
+    <video id="video" playsinline muted></video>
     <h3>Scanned codes</h3>
     <ul id="list"></ul>
 
@@ -64,11 +64,23 @@
                 const codeReader = new ZXing.BrowserQRCodeReader();
                 const scanned = new Set();
                 const list = document.getElementById("list");
+                const videoElement = document.getElementById("video");
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 let flashlightOn = false;
 
                 async function sleep(n) {
                     return new Promise(resolve => setTimeout(resolve, n));
+                }
+
+                async function queryCameraCapabilities(stream, videoElement) {
+                    const track = stream.getVideoTracks()[0];
+                    videoElement.srcObject = stream;
+                    await videoElement.play();
+                    capabilities = track.getCapabilities?.();
+                    track.stop();
+                    videoElement.srcObject = null;
+                    await sleep(5000);
+                    return capabilities;
                 }
 
                 async function getCameras() {
@@ -86,10 +98,7 @@
                                 facingMode: 'environment'
                             }
                         });
-                        const track = stream.getVideoTracks()[0];
-                        capabilities = track.getCapabilities?.();
-                        track.stop();
-                        await sleep(5000);
+                        capabilities = await queryCameraCapabilities(stream, videoElement);
                     }
 
                     for (const device of videoDevices) {
@@ -98,10 +107,7 @@
                             const stream = await navigator.mediaDevices.getUserMedia({
                                 video: { deviceId: { exact: device.deviceId } }
                             });
-                            const track = stream.getVideoTracks()[0];
-                            capabilities = track.getCapabilities?.();
-                            track.stop();
-                            await sleep(5000);
+                            capabilities = await queryCameraCapabilities(stream, videoElement);
                         } catch (e) {
                             console.log(`Could not access camera ${device.label}:`, e);
                         }
