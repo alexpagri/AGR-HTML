@@ -101,7 +101,9 @@
                 async function init() {
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: {
-                            torch: { ideal: true },
+                            advanced: [
+                                { torch: { ideal: true } }
+                            ],
                             facingMode: 'environment'
                         }
                     })
