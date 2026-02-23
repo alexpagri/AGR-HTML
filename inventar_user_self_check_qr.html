@@ -163,41 +163,42 @@
                     // await pr;
                     // await sleep(5000);
 
-                    alert(JSON.stringify((await getCameras()).map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
+                    const cameras = await getCameras();
+                    alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
 
                     // const devices = await navigator.mediaDevices.enumerateDevices();
 
                     // const videoDevices = devices.filter(d => d.kind === 'videoinput');
                     // await procVd(videoDevices.reverse());
-                    // // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
-                    // const backFacing = videoDevices.filter(d => d.getCapabilities().facingMode.includes('environment'));
-                    // // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
-                    // const withFlash = backFacing.filter(d => d.getCapabilities().torch != null);
-                    // // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
-                    // const selectedDeviceId = (
-                    //     withFlash.length > 0 ? withFlash[0].deviceId : (
-                    //         backFacing.length > 0 ? backFacing[0].deviceId : videoDevices[0].deviceId
-                    //     )
-                    // );
+                    // alert(JSON.stringify(videoDevices.map(d => d.getCapabilities())));
+                    const backFacing = cameras.filter(d => d.capabilities.facingMode.includes('environment'));
+                    // alert(JSON.stringify(backFacing.map(d => d.getCapabilities())));
+                    const withFlash = backFacing.filter(d => d.capabilities.torch != null);
+                    // alert(JSON.stringify(withFlash.map(d => d.getCapabilities())));
+                    const selectedDeviceId = (
+                        withFlash.length > 0 ? withFlash[0].deviceId : (
+                            backFacing.length > 0 ? backFacing[0].deviceId : cameras[0].deviceId
+                        )
+                    );
 
-                    // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                    //     if (err && err.name !== 'N') {
-                    //         console.log(err);
-                    //     }
-                    //     if (result) {
-                    //         const text = result.text;
-                    //         if (!scanned.has(text)) {
-                    //             scanned.add(text);
+                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                        if (err && err.name !== 'N') {
+                            console.log(err);
+                        }
+                        if (result) {
+                            const text = result.text;
+                            if (!scanned.has(text)) {
+                                scanned.add(text);
 
-                    //             const li = document.createElement("li");
-                    //             li.textContent = text;
-                    //             list.appendChild(li);
+                                const li = document.createElement("li");
+                                li.textContent = text;
+                                list.appendChild(li);
 
-                    //             navigator.vibrate?.(50);
-                    //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                    //         }
-                    //     }
-                    // });
+                                navigator.vibrate?.(50);
+                                // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                            }
+                        }
+                    });
                 }
 
                 init();
