@@ -211,6 +211,8 @@
                     if (videoTrack) {
                         try {
                             flashlightOn = !flashlightOn;
+                            alert(JSON.stringify(videoTrack));
+                            alert(JSON.stringify(videoElement?.captureStream()?.getVideoTracks()?.[0]));
                             alert(JSON.stringify({
                                 advanced: [{ torch: flashlightOn }]
                             }));
