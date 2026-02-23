@@ -101,9 +101,13 @@
                 async function init() {
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: {
+                            advanced: {
+                                torch: { ideal: true }
+                            },
                             facingMode: 'environment'
                         }
                     })
+                    alert(JSON.stringify(stream.getVideoTracks()[0].getCapabilities()));
                     // init and get permissions
                     const pr = new Promise((resolve, reject) => {
                         stream.oninactive = () => resolve();
