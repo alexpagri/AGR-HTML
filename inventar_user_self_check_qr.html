@@ -185,24 +185,31 @@
                         )
                     );
 
-                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                        if (err && err.name !== 'N') {
-                            console.log(err);
-                        }
-                        if (result) {
-                            const text = result.text;
-                            if (!scanned.has(text)) {
-                                scanned.add(text);
-
-                                const li = document.createElement("li");
-                                li.textContent = text;
-                                list.appendChild(li);
-
-                                navigator.vibrate?.(50);
-                                // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                            }
-                        }
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { deviceId: { exact: selectedDeviceId } }
                     });
+                    const track = stream.getVideoTracks()[0];
+                    videoElement.srcObject = stream;
+                    await videoElement.play();
+
+                    // codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                    //     if (err && err.name !== 'N') {
+                    //         console.log(err);
+                    //     }
+                    //     if (result) {
+                    //         const text = result.text;
+                    //         if (!scanned.has(text)) {
+                    //             scanned.add(text);
+
+                    //             const li = document.createElement("li");
+                    //             li.textContent = text;
+                    //             list.appendChild(li);
+
+                    //             navigator.vibrate?.(50);
+                    //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                    //         }
+                    //     }
+                    // });
                 }
 
                 init();
