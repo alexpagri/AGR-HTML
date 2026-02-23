@@ -80,6 +80,7 @@
                     capabilities = track.getCapabilities?.();
                     track.stop();
                     videoElement.srcObject = null;
+                    // ({} as HTMLVideoElement).addEventListener('ended', () => { });
                     // await sleep(5000);
                     return capabilities;
                 }
@@ -120,6 +121,7 @@
                             capabilities
                         });
                     }
+                    await sleep(5000);
                     return cameras;
                 }
 
@@ -229,7 +231,7 @@
                             flashlightBtn.style.color = flashlightOn ? '#333' : 'white';
                         } catch (e) {
                             // alert('Flashlight nu este disponibil pe acest dispozitiv.');
-                            // alert(JSON.stringify(videoTrack.getCapabilities(), null));
+                            alert(JSON.stringify(videoTrack.getCapabilities(), null));
                             alert(e.name);
                             alert(e.message);
                         }
