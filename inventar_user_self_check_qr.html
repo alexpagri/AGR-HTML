@@ -225,6 +225,8 @@
                     alert(videoElement?.captureStream()?.getTracks()?.length);
                     alert(videoElement?.srcObject?.getTracks()?.length);
                     alert(videoElement?.srcObject?.getTracks()?.[0].id);
+                    alert(JSON.stringify(videoElement?.srcObject?.getTracks()?.[0].getCapabilities?.()));
+                    alert(JSON.stringify(videoElement?.srcObject?.getVideoTracks()?.[0].getCapabilities?.()));
                     if (videoTrack) {
                         try {
                             flashlightOn = !flashlightOn;
@@ -235,7 +237,7 @@
                             }));
                             alert(JSON.stringify(document.getElementById("video")?.captureStream()?.getTracks()?.[0]?.getCapabilities?.(), null));
                             await videoTrack.applyConstraints({
-                                torch: flashlightOn
+                                advanced: [{ torch: flashlightOn }]
                             });
                             alert("ok");
                             flashlightBtn.innerHTML = flashlightOn
