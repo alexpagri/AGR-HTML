@@ -211,9 +211,13 @@
                     if (videoTrack) {
                         try {
                             flashlightOn = !flashlightOn;
+                            alert(JSON.stringify({
+                                advanced: [{ torch: flashlightOn }]
+                            }));
                             await videoTrack.applyConstraints({
                                 advanced: [{ torch: flashlightOn }]
                             });
+                            alert("ok");
                             flashlightBtn.innerHTML = flashlightOn
                                 ? '<i class="fa-solid fa-lightbulb"></i>'
                                 : '<i class="fa-regular fa-lightbulb"></i>';
