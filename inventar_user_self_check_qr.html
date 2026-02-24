@@ -406,7 +406,8 @@
                         try {
                             // create new detector
                             scanDot.classList.toggle('flash');
-                            const values = await barcodeDetector.detect(videoElement).map(b => b.rawValue).forEach(v => {
+                            const values = await barcodeDetector.detect(videoElement);
+                            values.map(b => b.rawValue).forEach(v => {
                                 if (!scanned.has(v)) {
                                     scanned.add(v);
 
