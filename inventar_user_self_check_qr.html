@@ -125,7 +125,7 @@
             position: absolute;
             bottom: 16px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(calc(-50% - 32px));
             width: 56px;
             height: 56px;
             border-radius: 50%;
@@ -143,6 +143,38 @@
 
         #flashlightBtn:hover {
             background: #555;
+        }
+
+        #detectToggleBtn {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(calc(-50% + 32px));
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: 'background 0.2s';
+            z-index: 10;
+        }
+
+        #detectToggleBtn:hover {
+            background: #218838;
+        }
+
+        #detectToggleBtn.paused {
+            background: #dc3545;
+        }
+
+        #detectToggleBtn.paused:hover {
+            background: #c82333;
         }
 
         #zoomSlider {
@@ -223,6 +255,9 @@
         <button id="flashlightBtn">
             <i class="fa-solid fa-lightbulb"></i>
         </button>
+        <button id="detectToggleBtn">
+            <i class="fa-solid fa-qrcode"></i>
+        </button>
         <input type="range" id="zoomSlider" min="1" max="1" step="0.1" value="1">
     </div>
     <h3>Scanned codes</h3>
@@ -245,10 +280,12 @@
                 const list = document.getElementById("list");
                 const videoElement = document.getElementById("video");
                 const flashlightBtn = document.getElementById("flashlightBtn");
+                const detectToggleBtn = document.getElementById('detectToggleBtn');
                 const scanDot = document.getElementById("scanDot");
                 const zoomSlider = document.getElementById('zoomSlider');
                 const FORCE_ENVIRONMENT_CAMERA = true;
                 let flashlightOn = false;
+                let detecting = false;
 
                 async function sleep(n) {
                     return new Promise(resolve => setTimeout(resolve, n));
@@ -382,6 +419,15 @@
                         }
                     });
 
+                    detectToggleBtn.addEventListener('click', () => {
+                        detecting = !detecting;
+                        detectToggleBtn.classList.toggle('paused', !detecting);
+                        scanDot.classList.remove('flash');
+                        detectToggleBtn.innerHTML = detecting
+                            ? '<i class="fa-solid fa-qrcode"></i>'
+                            : '<i class="fa-solid fa-qrcode" style="opacity: 0.5"></i>';
+                    });
+
                     if (capabilities.zoom) {
                         zoomSlider.min = capabilities.zoom.min;
                         zoomSlider.max = capabilities.zoom.max;
@@ -409,21 +455,23 @@
                     });
                     while (true) {
                         try {
-                            // create new detector
-                            scanDot.classList.toggle('flash');
-                            const values = await barcodeDetector.detect(videoElement);
-                            values.map(b => b.rawValue).forEach(v => {
-                                if (!scanned.has(v)) {
-                                    scanned.add(v);
+                            if (detecting) {
+                                // create new detector
+                                scanDot.classList.toggle('flash');
+                                const values = await barcodeDetector.detect(videoElement);
+                                values.map(b => b.rawValue).forEach(v => {
+                                    if (!scanned.has(v)) {
+                                        scanned.add(v);
 
-                                    const li = document.createElement("li");
-                                    li.textContent = v;
-                                    list.appendChild(li);
+                                        const li = document.createElement("li");
+                                        li.textContent = v;
+                                        list.appendChild(li);
 
-                                    // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                                }
-                            });
-                            navigator.vibrate?.(150);
+                                        // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                    }
+                                });
+                                navigator.vibrate?.(150);
+                            }
                             await sleep(500);
                         } catch (e) {
                             alert(e.name);
