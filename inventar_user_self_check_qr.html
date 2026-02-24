@@ -93,7 +93,7 @@
         // This is the standard way to use ES modules in a traditional script.
         // The import statement returns a promise, so we use .then() to access the library.
         // Library not available in module
-        import('https://unpkg.com/@zxing/library@latest')
+        import('https://unpkg.com/@zxing/library@latest/umd/index.js')
             .then(module => {
                 const hints = new Map();
                 hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
