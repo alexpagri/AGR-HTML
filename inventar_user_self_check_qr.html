@@ -274,7 +274,7 @@
         </button>
         <input type="range" id="zoomSlider" min="1" max="1" step="0.1" value="1">
     </div>
-    <h3>Scanned codes</h3>
+    <h3 id="scannedHeader">Scanned codes (0)</h3>
     <div class="scanned-container">
         <ul id="list"></ul>
     </div>
@@ -298,9 +298,35 @@
                 const detectToggleBtn = document.getElementById('detectToggleBtn');
                 const scanDot = document.getElementById("scanDot");
                 const zoomSlider = document.getElementById('zoomSlider');
+                const scannedHeader = document.getElementById('scannedHeader');
                 const FORCE_ENVIRONMENT_CAMERA = true;
                 let flashlightOn = false;
                 let detecting = 0;
+
+                const setDetecting = d => {
+                    switch (d) {
+                        case 1:
+                            detectToggleBtn.classList.remove('paused');
+                            detectToggleBtn.classList.remove('continuous');
+                            detecting = 1;
+                            break;
+                        case 2:
+                            detectToggleBtn.classList.remove('paused');
+                            detectToggleBtn.classList.add('continuous');
+                            detecting = 2;
+                            break;
+                        default:
+                            detectToggleBtn.classList.add('paused');
+                            detectToggleBtn.classList.remove('continuous');
+                            scanDot.classList.remove('flash');
+                            detecting = 0;
+                            break;
+                    }
+                };
+
+                const updateScannedCount = () => {
+                    scannedHeader.textContent = `Scanned codes (${scanned.size})`;
+                };
 
                 async function sleep(n) {
                     return new Promise(resolve => setTimeout(resolve, n));
@@ -435,27 +461,6 @@
                         }
                     });
 
-                    const setDetecting = d => {
-                        switch (d) {
-                            case 1:
-                                detectToggleBtn.classList.remove('paused');
-                                detectToggleBtn.classList.remove('continuous');
-                                detecting = 1;
-                                break;
-                            case 2:
-                                detectToggleBtn.classList.remove('paused');
-                                detectToggleBtn.classList.add('continuous');
-                                detecting = 2;
-                                break;
-                            default:
-                                detectToggleBtn.classList.add('paused');
-                                detectToggleBtn.classList.remove('continuous');
-                                scanDot.classList.remove('flash');
-                                detecting = 0;
-                                break;
-                        }
-                    };
-
                     detectToggleBtn.addEventListener('click', () => {
                         setDetecting(detecting + 1);
                     });
@@ -500,6 +505,7 @@
                                         list.appendChild(li);
 
                                         // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                        updateScannedCount();
                                         navigator.vibrate?.(150);
                                         if (detecting === 1) {
                                             setDetecting(0);
