@@ -80,6 +80,7 @@
                 const list = document.getElementById("list");
                 const videoElement = document.getElementById("video");
                 const flashlightBtn = document.getElementById("flashlightBtn");
+                const FORCE_ENVIRONMENT_CAMERA = true;
                 let flashlightOn = false;
 
                 async function sleep(n) {
@@ -122,11 +123,14 @@
                         let capabilities;
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({
-                                video: { deviceId: { exact: device.deviceId } }
+                                video: {
+                                    deviceId: { exact: device.deviceId },
+                                    facingMode: FORCE_ENVIRONMENT_CAMERA ? { exact: 'environment' } : 'environment'
+                                }
                             });
                             capabilities = await queryCameraCapabilitiesAndStop(stream, videoElement);
                         } catch (e) {
-                            console.log(`Could not access camera ${device.label}:`, e);
+                            alert(`Could not access camera ${device.label}:`);
                         }
                         cameras.push({
                             deviceId: device.deviceId,
