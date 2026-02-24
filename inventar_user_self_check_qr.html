@@ -133,7 +133,8 @@
                             });
                             capabilities = await queryCameraCapabilitiesAndStop(stream, videoElement);
                         } catch (e) {
-                            alert(`Could not access camera ${device.label}:`);
+                            continue;
+                            // alert(`Could not access camera ${device.label}:`);
                         }
                         cameras.push({
                             deviceId: device.deviceId,
