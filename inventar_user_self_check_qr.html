@@ -490,36 +490,38 @@
                     const barcodeDetector = new BarcodeDetector({
                         formats: ["qr_code"],
                     });
-                    while (true) {
-                        try {
-                            if (detecting) {
-                                // create new detector
-                                scanDot.classList.toggle('flash');
-                                const values = await barcodeDetector.detect(videoElement);
-                                for (const v of values.map(v => v.rawValue)) {
-                                    if (!scanned.has(v)) {
-                                        scanned.add(v);
+                    (async () => {
+                        while (true) {
+                            try {
+                                if (detecting) {
+                                    // create new detector
+                                    scanDot.classList.toggle('flash');
+                                    const values = await barcodeDetector.detect(videoElement);
+                                    for (const v of values.map(v => v.rawValue)) {
+                                        if (!scanned.has(v)) {
+                                            scanned.add(v);
 
-                                        const li = document.createElement("li");
-                                        li.textContent = v;
-                                        list.appendChild(li);
+                                            const li = document.createElement("li");
+                                            li.textContent = v;
+                                            list.appendChild(li);
 
-                                        // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                                        updateScannedCount();
-                                        navigator.vibrate?.(150);
-                                        if (detecting === 1) {
-                                            setDetecting(0);
-                                            break;
+                                            // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                            updateScannedCount();
+                                            navigator.vibrate?.(150);
+                                            if (detecting === 1) {
+                                                setDetecting(0);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+                                await sleep(500);
+                            } catch (e) {
+                                alert(e.name);
+                                alert(e.message);
                             }
-                            await sleep(500);
-                        } catch (e) {
-                            alert(e.name);
-                            alert(e.message);
                         }
-                    }
+                    })();
                 }
 
                 init();
