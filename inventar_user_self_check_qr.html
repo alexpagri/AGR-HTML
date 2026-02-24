@@ -171,10 +171,19 @@
 
         #detectToggleBtn.paused {
             background: #dc3545;
+            opacity: 0.5;
         }
 
         #detectToggleBtn.paused:hover {
             background: #c82333;
+        }
+
+        #detectToggleBtn.continuous {
+            background: #141cfd;
+        }
+
+        #detectToggleBtn.continuous:hover {
+            background: #0e13b9;
         }
 
         #zoomSlider {
@@ -256,7 +265,7 @@
             <i class="fa-solid fa-lightbulb"></i>
         </button>
         <button id="detectToggleBtn">
-            <i class="fa-solid fa-qrcode"></i>
+            <i class="fa-solid fa-qrcode paused"></i>
         </button>
         <input type="range" id="zoomSlider" min="1" max="1" step="0.1" value="1">
     </div>
@@ -285,7 +294,7 @@
                 const zoomSlider = document.getElementById('zoomSlider');
                 const FORCE_ENVIRONMENT_CAMERA = true;
                 let flashlightOn = false;
-                let detecting = false;
+                let detecting = 0;
 
                 async function sleep(n) {
                     return new Promise(resolve => setTimeout(resolve, n));
@@ -419,13 +428,35 @@
                         }
                     });
 
+                    const setDetecting = d => {
+                        switch (d) {
+                            case 0:
+                                detectToggleBtn.classList.add('paused');
+                                detectToggleBtn.classList.remove('continuous');
+                                scanDot.classList.remove('flash');
+                                detecting = 0;
+                                break;
+                            case 1:
+                                detectToggleBtn.classList.remove('paused');
+                                detectToggleBtn.classList.remove('continuous');
+                                detecting = 1;
+                                break;
+                            case 2:
+                                detectToggleBtn.classList.remove('paused');
+                                detectToggleBtn.classList.add('continuous');
+                                detecting = 2;
+                                break;
+                            default:
+                                detectToggleBtn.classList.add('paused');
+                                detectToggleBtn.classList.remove('continuous');
+                                scanDot.classList.remove('flash');
+                                detecting = 0;
+                                break;
+                        }
+                    };
+
                     detectToggleBtn.addEventListener('click', () => {
-                        detecting = !detecting;
-                        detectToggleBtn.classList.toggle('paused', !detecting);
-                        scanDot.classList.remove('flash');
-                        detectToggleBtn.innerHTML = detecting
-                            ? '<i class="fa-solid fa-qrcode"></i>'
-                            : '<i class="fa-solid fa-qrcode" style="opacity: 0.5"></i>';
+                        setDetecting(detecting + 1);
                     });
 
                     if (capabilities.zoom) {
@@ -459,7 +490,7 @@
                                 // create new detector
                                 scanDot.classList.toggle('flash');
                                 const values = await barcodeDetector.detect(videoElement);
-                                values.map(b => b.rawValue).forEach(v => {
+                                for (const v of values.map(v => v.rawValue)) {
                                     if (!scanned.has(v)) {
                                         scanned.add(v);
 
@@ -469,7 +500,11 @@
 
                                         // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
                                     }
-                                });
+                                    if (detecting === 1) {
+                                        setDetecting(0);
+                                        break;
+                                    }
+                                }
                                 navigator.vibrate?.(150);
                             }
                             await sleep(500);
