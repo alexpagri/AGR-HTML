@@ -14,21 +14,16 @@
 
         .video-container {
             position: relative;
-            width: 90%;
-            margin: 5% 5%;
-        }
-
-        .video-wrapper {
-            position: relative;
-            width: 100%;
+            margin: 5% auto;
+            max-width: 90vw;
+            max-height: 80vh;
+            width: fit-content;
         }
 
         video {
-            width: 100%;
-            height: auto;
-            max-height: 80vh;
-            object-fit: contain;
             display: block;
+            max-width: 90vw;
+            max-height: 80vh;
         }
 
         #scanDot {
@@ -84,10 +79,8 @@
 <body>
 
     <div class="video-container">
-        <div class="video-wrapper">
-            <video id="video" playsinline muted></video>
-            <div id="scanDot"></div>
-        </div>
+        <video id="video" playsinline muted></video>
+        <div id="scanDot"></div>
         <button id="flashlightBtn">
             <i class="fa-solid fa-lightbulb"></i>
         </button>
