@@ -247,12 +247,16 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        .hide {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="video-container">
+    <div id="container" class="video-container hide">
         <video id="video" playsinline muted></video>
         <div class="scan-overlay">
             <div class="scan-zone">
@@ -287,6 +291,7 @@
                 const codeReader = new ZXing.BrowserMultiFormatReader(hints, 5000);
                 const scanned = new Set();
                 const list = document.getElementById("list");
+                const container = document.getElementById("container");
                 const videoElement = document.getElementById("video");
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 const detectToggleBtn = document.getElementById('detectToggleBtn');
@@ -359,7 +364,7 @@
                 async function init() {
 
                     const cameras = await getCameras();
-                    alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
+                    // alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
 
                     const backFacing = cameras.filter(d => d.capabilities.facingMode.includes('environment'));
                     // alert(JSON.stringify(backFacing));
@@ -376,7 +381,7 @@
                     });
                     const track = stream.getVideoTracks()[0];
                     const capabilities = track.getCapabilities();
-                    alert(JSON.stringify(capabilities));
+                    // alert(JSON.stringify(capabilities));
 
                     await track.applyConstraints({
                         width: { ideal: capabilities.width.max },
@@ -386,6 +391,7 @@
                     });
                     videoElement.srcObject = stream;
                     await videoElement.play();
+                    container.classList.remove('hide');
                     // alert(track.id);
                     // alert(JSON.stringify(track.getCapabilities()));
 
@@ -493,13 +499,13 @@
                                         list.appendChild(li);
 
                                         // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                                    }
-                                    if (detecting === 1) {
-                                        setDetecting(0);
-                                        break;
+                                        navigator.vibrate?.(150);
+                                        if (detecting === 1) {
+                                            setDetecting(0);
+                                            break;
+                                        }
                                     }
                                 }
-                                navigator.vibrate?.(150);
                             }
                             await sleep(500);
                         } catch (e) {
