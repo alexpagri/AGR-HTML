@@ -170,7 +170,7 @@
                 async function init() {
 
                     const cameras = await getCameras();
-                    // alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
+                    alert(JSON.stringify(cameras.map(e => ({ ...e, capabilities: Object.keys(e.capabilities) }))));
 
                     const backFacing = cameras.filter(d => d.capabilities.facingMode.includes('environment'));
                     // alert(JSON.stringify(backFacing));
@@ -192,7 +192,8 @@
                     await track.applyConstraints({
                         width: { ideal: capabilities.width.max / 2 },
                         height: { ideal: capabilities.height.max / 2 },
-                        resizeMode: { ideal: 'none' }
+                        resizeMode: { ideal: 'none' },
+                        zoom: { ideal: 2 },
                     });
                     // videoElement.srcObject = stream;
                     // await videoElement.play();
