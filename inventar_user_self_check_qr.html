@@ -187,7 +187,8 @@
                     const capabilities = track.getCapabilities();
 
                     await track.applyConstraints({
-                        advanced: [{ width: capabilities.width.max / 2, height: capabilities.height.max / 2, resizeMode: 'none' }]
+                        width: { ideal: capabilities.width.max / 2 },
+                        height: { ideal: capabilities.height.max / 2 }
                     });
                     // videoElement.srcObject = stream;
                     // await videoElement.play();
