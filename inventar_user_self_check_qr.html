@@ -16,12 +16,16 @@
             position: relative;
             width: 90%;
             margin: 5% 5%;
-            aspect-ratio: 4 / 3;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
         }
 
         video {
             width: 100%;
-            height: 100%;
+            height: auto;
             max-height: 80vh;
             object-fit: contain;
             display: block;
@@ -80,8 +84,10 @@
 <body>
 
     <div class="video-container">
-        <video id="video" playsinline muted></video>
-        <div id="scanDot"></div>
+        <div class="video-wrapper">
+            <video id="video" playsinline muted></video>
+            <div id="scanDot"></div>
+        </div>
         <button id="flashlightBtn">
             <i class="fa-solid fa-lightbulb"></i>
         </button>
@@ -185,10 +191,12 @@
                     });
                     const track = stream.getVideoTracks()[0];
                     const capabilities = track.getCapabilities();
+                    alert(JSON.stringify(capabilities));
 
                     await track.applyConstraints({
                         width: { ideal: capabilities.width.max / 2 },
-                        height: { ideal: capabilities.height.max / 2 }
+                        height: { ideal: capabilities.height.max / 2 },
+                        resizeMode: { ideal: 'none' }
                     });
                     // videoElement.srcObject = stream;
                     // await videoElement.play();
