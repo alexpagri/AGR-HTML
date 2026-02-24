@@ -333,30 +333,30 @@
                         resizeMode: { ideal: 'none' },
                         // advanced: [{ zoom: 2 }],
                     });
-                    // videoElement.srcObject = stream;
-                    // await videoElement.play();
+                    videoElement.srcObject = stream;
+                    await videoElement.play();
                     // alert(track.id);
                     // alert(JSON.stringify(track.getCapabilities()));
 
-                    codeReader.decodeFromStream(stream, 'video', (result, err) => {
-                        scanDot.classList.toggle('flash');
-                        if (err && err.name !== 'N') {
-                            console.log(err);
-                        }
-                        if (result) {
-                            const text = result.text;
-                            if (!scanned.has(text)) {
-                                scanned.add(text);
+                    // codeReader.decodeFromStream(stream, 'video', (result, err) => {
+                    //     scanDot.classList.toggle('flash');
+                    //     if (err && err.name !== 'N') {
+                    //         console.log(err);
+                    //     }
+                    //     if (result) {
+                    //         const text = result.text;
+                    //         if (!scanned.has(text)) {
+                    //             scanned.add(text);
 
-                                const li = document.createElement("li");
-                                li.textContent = text;
-                                list.appendChild(li);
+                    //             const li = document.createElement("li");
+                    //             li.textContent = text;
+                    //             list.appendChild(li);
 
-                                navigator.vibrate?.(150);
-                                // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
-                            }
-                        }
-                    });
+                    //             navigator.vibrate?.(150);
+                    //             // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                    //         }
+                    //     }
+                    // });
 
                     flashlightBtn.addEventListener('click', async () => {
                         if (track) {
@@ -395,6 +395,34 @@
                     } else {
                         zoomSlider.style.display = 'none';
                     }
+
+                    if (!("BarcodeDetector" in globalThis)) {
+                        alert("Barcode Detector is not supported by this browser.");
+                    }
+                    const barcodeDetector = new BarcodeDetector({
+                        formats: ["qr_code"],
+                    });
+                    setInterval(async () => {
+                        try {
+                            // create new detector
+                            scanDot.classList.toggle('flash');
+                            const values = await barcodeDetector.detect(videoElement).map(b => b.rawValue).forEach(v => {
+                                if (!scanned.has(v)) {
+                                    scanned.add(v);
+
+                                    const li = document.createElement("li");
+                                    li.textContent = v;
+                                    list.appendChild(li);
+
+                                    // new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU").play();
+                                }
+                            });
+                            navigator.vibrate?.(150);
+                        } catch (e) {
+                            alert(e.name);
+                            alert(e.message);
+                        }
+                    }, 2000);
                 }
 
                 init();
