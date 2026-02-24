@@ -14,8 +14,8 @@
 
         .video-container {
             position: relative;
-            width: 80%;
-            margin: 10% 10%;
+            width: 100%;
+            margin: 5% 5%;
         }
 
         video {
@@ -165,6 +165,11 @@
                         video: { deviceId: { exact: selectedDeviceId } }
                     });
                     const track = stream.getVideoTracks()[0];
+                    const capabilities = track.getCapabilities();
+
+                    await track.applyConstraints({
+                        advanced: [{ width: capabilities.width.max, height: capabilities.height.max }]
+                    });
                     // videoElement.srcObject = stream;
                     // await videoElement.play();
                     // alert(track.id);
