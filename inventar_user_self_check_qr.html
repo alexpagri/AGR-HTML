@@ -145,6 +145,42 @@
             background: #555;
         }
 
+        #zoomSlider {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            outline: none;
+            z-index: 10;
+        }
+
+        #zoomSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        #zoomSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
         h3 {
             text-align: center;
         }
@@ -182,6 +218,7 @@
         <button id="flashlightBtn">
             <i class="fa-solid fa-lightbulb"></i>
         </button>
+        <input type="range" id="zoomSlider" min="1" max="1" step="0.1" value="1">
     </div>
     <h3>Scanned codes</h3>
     <div class="scanned-container">
@@ -198,12 +235,13 @@
                 const hints = new Map();
                 hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
                 hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
-                const codeReader = new ZXing.BrowserMultiFormatReader(hints, 2000);
+                const codeReader = new ZXing.BrowserMultiFormatReader(hints, 5000);
                 const scanned = new Set();
                 const list = document.getElementById("list");
                 const videoElement = document.getElementById("video");
                 const flashlightBtn = document.getElementById("flashlightBtn");
                 const scanDot = document.getElementById("scanDot");
+                const zoomSlider = document.getElementById('zoomSlider');
                 const FORCE_ENVIRONMENT_CAMERA = true;
                 let flashlightOn = false;
 
@@ -290,10 +328,10 @@
                     alert(JSON.stringify(capabilities));
 
                     await track.applyConstraints({
-                        width: { ideal: capabilities.width.max / 2 },
-                        height: { ideal: capabilities.height.max / 2 },
+                        width: { ideal: capabilities.width.max },
+                        height: { ideal: capabilities.height.max },
                         resizeMode: { ideal: 'none' },
-                        advanced: [{ zoom: 2 }],
+                        // advanced: [{ zoom: 2 }],
                     });
                     // videoElement.srcObject = stream;
                     // await videoElement.play();
@@ -338,6 +376,25 @@
                             }
                         }
                     });
+
+                    if (capabilities.zoom) {
+                        zoomSlider.min = capabilities.zoom.min;
+                        zoomSlider.max = capabilities.zoom.max;
+                        zoomSlider.step = capabilities.zoom.step || 0.1;
+                        zoomSlider.value = capabilities.zoom.min;
+
+                        zoomSlider.addEventListener('input', async () => {
+                            try {
+                                await track.applyConstraints({
+                                    advanced: [{ zoom: parseFloat(zoomSlider.value) }]
+                                });
+                            } catch (e) {
+                                console.error('Zoom error:', e);
+                            }
+                        });
+                    } else {
+                        zoomSlider.style.display = 'none';
+                    }
                 }
 
                 init();
