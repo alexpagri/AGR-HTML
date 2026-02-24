@@ -196,10 +196,14 @@
             text-align: center;
             list-style-position: inside;
             padding: 0;
+            overflow: hidden;
         }
 
         .scanned-container li {
             margin: 8px 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -402,7 +406,7 @@
                     const barcodeDetector = new BarcodeDetector({
                         formats: ["qr_code"],
                     });
-                    setInterval(async () => {
+                    while (true) {
                         try {
                             // create new detector
                             scanDot.classList.toggle('flash');
@@ -419,11 +423,12 @@
                                 }
                             });
                             navigator.vibrate?.(150);
+                            await sleep(500);
                         } catch (e) {
                             alert(e.name);
                             alert(e.message);
                         }
-                    }, 2000);
+                    }
                 }
 
                 init();
